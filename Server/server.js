@@ -1,38 +1,44 @@
+
+
+const { SerialPort } = require('serialport');
 const express = require('express');
 const http = require('http');
-const WebSocket = require('ws');
+const Readline = require('@serialport/parser-readline');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
 
 const port = 3000;
 
+const serialPort = new SerialPort({ 
+  path:'/dev/ttyACM0',
+  baudRate: 115200,
+  dataBits: 8,
+  parity: 'none',
+  stopBits: 1,
+  flowControl: false,
+});
+
+const parser = serialPort.pipe(new Readline.ReadlineParser({ delimiter: '\r\n' }));
+
+serialPort.on('open', function() {
+  console.log('Port série ouvert');
+});
+
+serialPort.on('error', function(err) {
+  console.error('Erreur :', err.message);
+});
+
 app.get('/', (req, res) => {
-  res.send('Serveur IoT');
+  res.sendFile(__dirname + '/index.html');
 });
 
-wss.on('connection', (ws) => {
-  console.log('Un client s\'est connecté');
-
-  ws.on('close', () => {
-    console.log('Client déconnecté');
-  });
-
-  ws.on('message', (message) => {
-    const { type, data } = JSON.parse(message);
-
-    if (type === 'vehicleHeight') {
-      const height = parseFloat(data);
-      if (!isNaN(height) && height > limiteHauteur) {
-        // Si la hauteur dépasse la limite, on envoie un message au client
-        ws.send(JSON.stringify({ type: 'message', data: 'Attention! La hauteur du véhicule est trop grande.' }));
-      }
-    }
+app.get('/data', (req, res) => {
+  parser.once('data', (data) => {
+    res.json({ type: 'arduinoData', data: data.trim() });
   });
 });
 
-const limiteHauteur = 200;  // la limite 
 
 server.listen(port, () => {
   console.log(`Serveur en écoute sur le port ${port}`);

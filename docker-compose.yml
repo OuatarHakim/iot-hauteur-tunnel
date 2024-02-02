@@ -7,8 +7,9 @@ services:
       - .:/app
     ports:
       - "3000:3000"
-    command: sh -c "npm install && node Server/server.js"
-
+    command: sh -c "node  Server/server.js"
+    devices:
+      - "/dev/ttyACM0:/dev/ttyACM0"
     depends_on:
       - mongodb
   mongodb:

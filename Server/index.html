@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino Data Display</title>
+</head>
+<body>
+    <h1>Arduino Data:</h1>
+    <div id="data-display"></div>
+
+    <script>
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('data-display').innerText = `Distance: ${data.data} mm`;
+=                    fetchData();
+                })
+                .catch(error => console.error('Erreur de récupération des données:', error));
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>

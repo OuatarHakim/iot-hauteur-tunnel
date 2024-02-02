@@ -1,7 +1,17 @@
 version: '3'
 services:
   web:
-    build: .
+    image: node:14
+    working_dir: /app
+    volumes:
+      - .:/app
     ports:
-      - "8080:8080"
+      - "3000:3000"
+    command: sh -c "npm install && node Server/server.js"
 
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo
+    ports:
+      - "27018:27017"

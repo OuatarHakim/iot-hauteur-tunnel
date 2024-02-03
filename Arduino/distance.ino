@@ -1,69 +1,75 @@
 #include <LiquidCrystal.h>
 
-/* constantes pour les broches */ const byte TRIGGER = 6; // broche TRIGGER
-const byte ECHO = 7;                                      // broche ECHO/* Constantes pour le timeout /const unsigned long MEASURE_TIMEOUT = 25000UL; // 25ms = 8m à 340m/s/ Vitesse du son dans l'air en mm/us */
-const float SOUND_SPEED = 340.0 / 1000;
-const unsigned long MEASURE_TIMEOUT = 25000UL;
+const byte TRIGGER = 6;                        // Broche TRIGGER
+const byte ECHO = 7;                           // Broche ECHO
+const float SOUND_SPEED = 340.0 / 1000;        // Vitesse du son dans l'air en mm/us
+const unsigned long MEASURE_TIMEOUT = 25000UL; // 25ms = 8m à 340m/s
+const float MAX_ALLOWED_HEIGHT = 200.0;        // Hauteur maximale autorisée en mm
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
 void setup()
 {
-
     lcd.begin(16, 2);
 
-    /*code pour module ultrason HCSR04 */
+    Serial.begin(115200); // Vitesse de communication série
 
-    Serial.begin(115200);
-    /* ATTENTION SUR ECRAN SERIAL MONITOR , il faudra choisir 115200 baud dans menu deroulant */
-    pinMode(8, OUTPUT); // LED ROUGE BUZZER
+    pinMode(8, OUTPUT); // LED ROUGE
     digitalWrite(8, LOW);
     pinMode(9, OUTPUT); // LED VERTE
-    digitalWrite(9, HIGH);
+    digitalWrite(9, LOW);
     pinMode(TRIGGER, OUTPUT);
     digitalWrite(TRIGGER, LOW);
     pinMode(ECHO, INPUT);
 }
+
 void loop()
 {
-    /* 1 envoie une impulsion HIGH de 10 us sur broche trigger */
     digitalWrite(TRIGGER, HIGH);
     delayMicroseconds(10);
     digitalWrite(TRIGGER, LOW);
 
-    /* 2 Mesure le temps entre l'envoi de l'impulsion et son echo */
     long measure = pulseIn(ECHO, HIGH, MEASURE_TIMEOUT);
-
-    /* 3 calcul la distance a partir du temps mesuré */
-
     float distance_mm = measure / 2.0 * SOUND_SPEED;
 
-    Serial.println("Distance: ");
-    Serial.print(distance_mm);
-    Serial.print("mm (");
-    Serial.print(distance_mm / 10.0, 2);
-    Serial.print("cm, ");
-    Serial.print(distance_mm / 1000.0, 2);
-    Serial.println("m)");
+    // Filtrer les données pour envoyer uniquement dans une plage spécifique (par exemple, entre 100 et 500 mm)
+
+    // Envoyer la distance via le port série
+    Serial.println(distance_mm);
 
     lcd.print(distance_mm / 10.0, 2);
     lcd.print("  CM");
 
     lcd.display();
+
     if (distance_mm > 600)
     {
-        digitalWrite(8, LOW);
-        digitalWrite(9, HIGH);
+        digitalWrite(8, HIGH); // LED rouge allumée
+        digitalWrite(9, LOW);  // LED verte éteinte
     }
     else if (distance_mm < 1)
     {
-        digitalWrite(8, LOW);
-        digitalWrite(9, LOW);
+        digitalWrite(8, LOW);  // LED rouge éteinte
+        digitalWrite(9, HIGH); // LED verte allumée
     }
     else
     {
-        digitalWrite(8, HIGH);
-        digitalWrite(9, LOW);
+        // Vérifier la hauteur du véhicule et allumer la LED appropriée
+        if (distance_mm <= MAX_ALLOWED_HEIGHT)
+        {
+            // La hauteur du véhicule n'est pas autorisée
+            digitalWrite(8, HIGH); // LED rouge allumée
+            digitalWrite(9, LOW);  // LED verte éteinte
+        }
+        else
+        {
+
+            // La hauteur du véhicule est autorisée
+            digitalWrite(8, LOW);  // LED rouge éteinte
+            digitalWrite(9, HIGH); // LED verte allumée
+        }
     }
 
+    // Ajouter un court délai pour éviter d'envoyer trop fréquemment
     delay(1000);
     lcd.clear();
 }

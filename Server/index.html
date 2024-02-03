@@ -14,8 +14,11 @@
             fetch('/data')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('data-display').innerText = `Distance: ${data.data} mm`;
-=                    fetchData();
+                    document.getElementById('data-display').innerHTML = `
+                        <p>Distance: ${data.distance} mm</p>
+                        <p>Status: ${data.data}</p>
+                    `;
+                    fetchData();
                 })
                 .catch(error => console.error('Erreur de récupération des données:', error));
         }

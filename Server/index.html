@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    
+
+
 
     <title>Arduino Data Display</title>
-    
+
 
     <!-- box icons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
+
 <body>
 
-     <!-- designe de l'entete-->
+    <!-- designe de l'entete-->
 
-     <header class="header">
+    <header class="header">
         <a href="#" class="logo">Arduino</a>
         <i class='bx bx-menu' id="menu-icon"></i>
 
@@ -24,78 +26,48 @@
             <a href="#home" class="active">Home</a>
             <a href="#Statistic">Statistic</a>
             <a href="#Reglages">Reglages</a>
-           
-           
+
+
         </nav>
     </header>
 
 
     <!-- home section design-->
-    <div class = "home" id="home">
+    <div class="home" id="home">
         <div class="home-content"></div>
-    <h1>Arduino Dataaa:</h1>
-    <div id="data-display"></div>
+        <h1>Arduino Dataaa:</h1>
+        <div id="data-display"></div>
 
-    <script>
 
-        let Max;
-        function fetchData() {
-            fetch('/data')
-                .then(response => response.json())
-                .then(data => {
-Max = data.distance;
-
-                   let statusIcon;
-                   
-                if (data.data === 'Autorisé') {
-                    
-                    statusIcon = '<i class="bx bxs-check-circle" ></i>'; // Icône de validation
-                    
-                } else {
-                    statusIcon = '<i class="bx bxs-x-circle"></i>'; // Icône d'interdiction
-                }
-                
-                    document.getElementById('data-display').innerHTML = `
-                    <div class="social-media">
-                        
-                        <p><a href="#"><i class='bx bx-ruler'></i></a>Distance: ${data.distance} mm</p>
-                        <p>Status: ${statusIcon} ${data.data}</p>
-                    </div>
-                    `;
-
-                     // Mettre la valeur de Max dans l'input
-                document.getElementById('max-distance').value = Max;
-                    fetchData();
-                })
-                .catch(error => console.error('Erreur de récupération des données:', error));
-        }
-
-        fetchData();
-    </script>
     </div>
- </section>
+    </section>
 
 
-  <!-- contact section design -->
+    <!-- contact section design -->
 
-  <section class="contact" id="contact">
-    <h2 class="heading">Reglage <span>Distance</span></h2>
-    <form action="#">
-     
+    <section class="contact" id="contact">
+        <h2 class="heading">Reglage <span>Distance</span></h2>
+        <form action="#">
 
-      <div class="input-box">
-        <input type="number" id="min-distance" placeholder="Min">
-        <input type="number" id="max-distance" placeholder="Max">
-     
-    </div>
-    
-    <input type="submit" value="Appliquer" class="btn">
 
-    </form>
-    
-   
+            <div class="input-box">
+                <input type="number" id="min-distance" placeholder="Min">
+                <input type="number" id="max-distance" placeholder="Max">
 
-</section>
+
+                <input type="submit" value="Appliquer" class="btn">
+                <div class="input-box">
+                    <input type="number" id="limit-distance" placeholder="Entrez la distance maximale">
+                    <button class="btn" onclick="sendMaxDistance()">Envoyer</button>
+                </div>
+
+        </form>
+
+
+
+
+
+    </section>
 
 
 
@@ -112,201 +84,260 @@ Max = data.distance;
         <a href="#home"><i class='bx bx-up-arrow-alt'></i></a>
     </div>
 </footer>
+<script>
+
+    let Max;
+    function fetchData() {
+        fetch('/data')
+            .then(response => response.json())
+            .then(data => {
+                Max = data.distance;
+
+                let statusIcon;
+
+                if (data.data === 'Autorisé') {
+
+                    statusIcon = '<i class="bx bxs-check-circle" ></i>'; // Icône de validation
+
+                } else {
+                    statusIcon = '<i class="bx bxs-x-circle"></i>'; // Icône d'interdiction
+                }
+
+                document.getElementById('data-display').innerHTML = `
+                <div class="social-media">
+                    
+                    <p><a href="#"><i class='bx bx-ruler'></i></a>Distance: ${data.distance} mm</p>
+                    <p>Status: ${statusIcon} ${data.data}</p>
+                </div>
+                `;
+
+                // Mettre la valeur de Max dans l'input
+                document.getElementById('max-distance').value = Max;
+                fetchData();
+            })
+            .catch(error => console.error('Erreur de récupération des données:', error));
+    }
+
+    fetchData();
+
+    function sendMaxDistance() {
+        const maxDistance = document.getElementById('limit-distance').value;
+        fetch('/limit-distance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ maxDistance: maxDistance })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Distance maximale envoyée avec succès à l\'Arduino:', data.maxDistance);
+            })
+            .catch(error => console.error('Erreur lors de l\'envoi de la distance maximale à l\'Arduino:', error));
+    }
+
+</script>
+
 </html>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
-* {
-    margin:0;
-    padding:0;
-    box-sizing: border-box;
-    text-decoration: none;
-    border: none;
-    outline: none;
-    scroll-behavior: smooth;
-    font-family: 'Poppins', sans-serif;
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        text-decoration: none;
+        border: none;
+        outline: none;
+        scroll-behavior: smooth;
+        font-family: 'Poppins', sans-serif;
 
-}
+    }
 
-:root {
-    --bg-color: #1f242d;
-    --second-bg-color: #323946;
-    --text-color: #fff;
-    --main-color: #0ef;
-}
-html {
-    font-size: 62.5%;
-    overflow-x: hidden;
-}
+    :root {
+        --bg-color: #1f242d;
+        --second-bg-color: #323946;
+        --text-color: #fff;
+        --main-color: #0ef;
+    }
 
-body {
-    background: var(--bg-color);
-    color: var(--text-color);
-}
+    html {
+        font-size: 62.5%;
+        overflow-x: hidden;
+    }
 
-section {
-    min-height: 100vh;
-    padding: 10rem 9% 2rem;
-}
+    body {
+        background: var(--bg-color);
+        color: var(--text-color);
+    }
 
-.header {
-    position: fixed;
-    top:0 ;
-    left:0;
-    width: 100%;
-    padding: 1rem 9%;
+    section {
+        min-height: 100vh;
+        padding: 10rem 9% 2rem;
+    }
 
-    background: var(--bg-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 100;
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 1rem 9%;
 
-}
+        background: var(--bg-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
 
-.logo {
+    }
 
-font-size: 2.5rem;
-color: var(--text-color);
-font-weight: 600;
-cursor:default ;
-}
-.navbar a {
-font-size: 1.7rem;
-color: var(--text-color);
-margin-left: 4rem;
-transition: .3s;
+    .logo {
 
-}
-.navbar a:hover,
-.navbar a.active {
-color: var(--main-color);
-}
-#menu-icon {
-    font-size: 3.6rem;
-    color: var(--text-color);
-    display: none;
-}
+        font-size: 2.5rem;
+        color: var(--text-color);
+        font-weight: 600;
+        cursor: default;
+    }
 
-.home {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    .navbar a {
+        font-size: 1.7rem;
+        color: var(--text-color);
+        margin-left: 4rem;
+        transition: .3s;
 
-.social-media a {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 4rem;
-    height: 4rem;
-    background: var(--main-color);
-    border: .2rem solid var(--main-color);
-    border-radius: 50%;
-    font-size: 2rem;
-    color: var(--second-bg-color);
-    margin: 3rem 1.5rem 3rem 0;
-    transition: .5s ease;
-    box-shadow: 0 0 1rem  var(--main-color);
-    
+    }
 
-}
+    .navbar a:hover,
+    .navbar a.active {
+        color: var(--main-color);
+    }
 
-h1{
-    margin-top: 10em;
-}
+    #menu-icon {
+        font-size: 3.6rem;
+        color: var(--text-color);
+        display: none;
+    }
+
+    .home {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .social-media a {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 4rem;
+        height: 4rem;
+        background: var(--main-color);
+        border: .2rem solid var(--main-color);
+        border-radius: 50%;
+        font-size: 2rem;
+        color: var(--second-bg-color);
+        margin: 3rem 1.5rem 3rem 0;
+        transition: .5s ease;
+        box-shadow: 0 0 1rem var(--main-color);
 
 
-.contact h2{
-    margin-bottom: 3rem;
+    }
 
-}
-.contact form{
-    max-width: 70rem;
-    margin: 1rem auto ;
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.contact form .input-box{
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
-.contact form .input-box input, 
-.contact form textarea {
-   width: 100%;
-   padding: 1.5rem;
-   font-size: 1.6rem;
-   color: var(--text-color); 
-
-   background: var(--second-bg-color) ;
-   border-radius: .8rem;
-   margin: .7rem 0;
-}
-
-.contact form .input-box input {
-    width: 49%;
-}
-
-.contact form textarea{
-    resize: none;
-}
-
-.contact form .btn{
-    margin-top: 2rem;
-    cursor:pointer;
-}
-
-.btn {
-    display: inline-block;
-    padding: 1rem 2.8rem;
-    background: var(--main-color);
-    border-radius: 4rem;
-    box-shadow: 0 0 1rem var(--main-color);
-    letter-spacing: .1rem;
-    font-weight: 600;
-    transition: .5s ease;
-}
-
-.btn:hover {
-    box-shadow: none;
-}
+    h1 {
+        margin-top: 10em;
+    }
 
 
-.footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 2rem 9%;
-    background: var(--second-bg-color);
-}
+    .contact h2 {
+        margin-bottom: 3rem;
 
-.footer-text p {
-    font-size: 1.6rem;
+    }
 
-}
+    .contact form {
+        max-width: 70rem;
+        margin: 1rem auto;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
 
-.footer-iconTop a {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    padding: .8rem;
-    background: var(--main-color);
-    border-radius: .8rem;
-    transition: .5s ease;
-}
+    .contact form .input-box {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
 
-.footer-iconTop a:hover{
-    box-shadow: 0 0 1rem var(--main-color);
-}
+    .contact form .input-box input,
+    .contact form textarea {
+        width: 100%;
+        padding: 1.5rem;
+        font-size: 1.6rem;
+        color: var(--text-color);
 
-.footer-iconTop a i{
-    font-size: 2.4rem;
-    color: var(--second-bg-color);
+        background: var(--second-bg-color);
+        border-radius: .8rem;
+        margin: .7rem 0;
+    }
 
-}
+    .contact form .input-box input {
+        width: 49%;
+    }
 
+    .contact form textarea {
+        resize: none;
+    }
+
+    .contact form .btn {
+        margin-top: 2rem;
+        cursor: pointer;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 1rem 2.8rem;
+        background: var(--main-color);
+        border-radius: 4rem;
+        box-shadow: 0 0 1rem var(--main-color);
+        letter-spacing: .1rem;
+        font-weight: 600;
+        transition: .5s ease;
+    }
+
+    .btn:hover {
+        box-shadow: none;
+    }
+
+
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 2rem 9%;
+        background: var(--second-bg-color);
+    }
+
+    .footer-text p {
+        font-size: 1.6rem;
+
+    }
+
+    .footer-iconTop a {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: .8rem;
+        background: var(--main-color);
+        border-radius: .8rem;
+        transition: .5s ease;
+    }
+
+    .footer-iconTop a:hover {
+        box-shadow: 0 0 1rem var(--main-color);
+    }
+
+    .footer-iconTop a i {
+        font-size: 2.4rem;
+        color: var(--second-bg-color);
+
+    }
 </style>

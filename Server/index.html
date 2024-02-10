@@ -24,8 +24,8 @@
 
         <nav class="navbar">
             <a href="#home" class="active">Home</a>
-            <a href="#Statistic">Statistic</a>
-            <a href="#Reglages">Reglages</a>
+            <a href="/statistics" >Statistic</a>
+             <a href="#Reglages">Reglages</a>
 
 
         </nav>
@@ -66,10 +66,14 @@
 
 
 
-
     </section>
-
-
+   
+    
+    <section class="statistics" id="statistics">
+        <h2 class="heading">Statistiques</h2>
+        <div id="statistics-display"></div>
+    </section>
+   
 
 </body>
 
@@ -135,6 +139,24 @@
             })
             .catch(error => console.error('Erreur lors de l\'envoi de la distance maximale à l\'Arduino:', error));
     }
+
+function fetchStatistics() {
+    fetch('/statistics')
+        .then(response => response.json())
+        .then(data => {
+            const statisticsDisplay = document.getElementById('statistics-display');
+            statisticsDisplay.innerHTML = ''; 
+            data.forEach(statistic => {
+                const statisticElement = document.createElement('div');
+                statisticElement.innerHTML = `<p>Distance: ${statistic.distance} mm</p>`;
+                statisticsDisplay.appendChild(statisticElement);
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
+}
+
+document.addEventListener('DOMContentLoaded', fetchStatistics);
+
 
 </script>
 
@@ -340,4 +362,35 @@
         color: var(--second-bg-color);
 
     }
+    .statistics {
+    padding: 5rem 0; 
+    background-color: #fff; 
+}
+
+.statistics .heading {
+    font-size: 2.5rem; 
+    margin-bottom: 3rem; 
+    color: #333; 
+    text-align: center; 
+}
+
+.statistics #statistics-display {
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 2rem; 
+}
+
+.statistics #statistics-display p {
+    font-size: 1.6rem; 
+    background-color: #1f242d; 
+    padding: 1.5rem; 
+    border-radius: 0.5rem;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); 
+}
+
+/* Style supplémentaire pour les statistiques lorsque la souris survole */
+.statistics #statistics-display p:hover {
+    background-color: #e0e0e0; /* Changement de couleur de fond */
+}
+
 </style>

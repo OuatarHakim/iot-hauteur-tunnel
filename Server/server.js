@@ -6,7 +6,8 @@ const Readline = require("@serialport/parser-readline");
 const app = express();
 const server = http.createServer(app);
 const port = 3000;
-
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
 const serialPort = new SerialPort({
   path: "/dev/ttyACM0",
   baudRate: 115200,
@@ -48,6 +49,23 @@ app.get("/data", (req, res) => {
     };
 
     res.json(response);
+  });
+});
+
+
+app.post('/limit-distance', (req, res) => {
+  const maxDistance = req.body.maxDistance;
+  console.log('Distance maximale reçue depuis la page web:', maxDistance);
+  
+  // Envoyer la distance maximale à l'Arduino via le port série
+  serialPort.write(`${maxDistance}\n`, (err) => {
+      if (err) {
+          console.error('Erreur lors de l\'envoi de la distance maximale à l\'Arduino:', err);
+          res.status(500).json({ error: 'Erreur lors de l\'envoi de la distance maximale à l\'Arduino' });
+      } else {
+          console.log('Distance maximale envoyée avec succès à l\'Arduino:', maxDistance);
+          res.json({ maxDistance: maxDistance });
+      }
   });
 });
 

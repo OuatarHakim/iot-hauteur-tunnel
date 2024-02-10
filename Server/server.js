@@ -5,7 +5,6 @@ const Readline = require("@serialport/parser-readline");
 
 const app = express();
 const server = http.createServer(app);
-
 const port = 3000;
 
 const serialPort = new SerialPort({
@@ -32,21 +31,19 @@ serialPort.on("error", function (err) {
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
-/*
+
 app.get("/data", (req, res) => {
   parser.once("data", (data) => {
-    res.json({ type: "arduinoData", data: data.trim() });
-  });
-});
-*/
-app.get("/data", (req, res) => {
-  parser.once("data", (data) => {
-    const distance = parseFloat(data.trim());
-    const isAuthorized = distance >= 100;
+    const [distance, maxAllowedHeight] = data.split(",");
+    console.log("Distance Update  = " + distance);
+    console.log("Max Allowed Height Update = " + maxAllowedHeight);
+
+    const isAuthorized = parseFloat(distance) >= parseFloat(maxAllowedHeight);
 
     const response = {
       type: "vehicleStatus",
-      distance: distance,
+      distance: parseFloat(distance),
+      maxAllowedHeight: parseFloat(maxAllowedHeight),
       data: isAuthorized ? "Autorisé" : "Non Autorisé",
     };
 

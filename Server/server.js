@@ -10,6 +10,46 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
 
+const mongoose = require('mongoose');
+
+
+// Connexion à MongoDB
+mongoose.connect('mongodb://mongodb:27017/arduino_data', { useNewUrlParser: true, useUnifiedTopology: true });
+ 
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Erreur de connexion à MongoDB :'));
+db.once('open', () => {
+  console.log('Connecté à la base de données MongoDB');
+});
+
+// Schéma pour les données Arduino
+const arduinoDataSchema = new mongoose.Schema({
+  distance: Number,
+  maxAllowedHeight: Number,
+  isAuthorized: Boolean
+});
+
+const ArduinoData = mongoose.model('ArduinoData', arduinoDataSchema);
+
+
+
+// Fonction pour enregistrer les données dans la base de données MongoDB
+function saveDataToMongoDB(distance, maxAllowedHeight, isAuthorized) {
+  const arduinoData = new ArduinoData({
+    distance: parseFloat(distance),
+    maxAllowedHeight: parseFloat(maxAllowedHeight),
+    isAuthorized: isAuthorized
+  });
+
+  arduinoData.save()
+  .then(() => {
+    console.log('Données Arduino enregistrées avec succès dans la base de données');
+  })
+  .catch(err => {
+    console.error('Erreur lors de l\'enregistrement des données Arduino:', err);
+  });
+
+}
 
 
 const serialPort = new SerialPort({
@@ -46,6 +86,9 @@ app.get("/data", (req, res) => {
     const isAuthorized = parseFloat(distance) >= parseFloat(maxAllowedHeight);
 
 
+     
+
+
 
 
     const response = {
@@ -56,6 +99,9 @@ app.get("/data", (req, res) => {
     };
 
     res.json(response);
+    // Enregistrer les données dans la base de données MongoDB
+    saveDataToMongoDB(distance, maxAllowedHeight, isAuthorized);
+
   });
 });
 

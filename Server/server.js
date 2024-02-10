@@ -121,6 +121,17 @@ app.post('/limit-distance', (req, res) => {
       }
   });
 });
+app.get("/statistics", (req, res) => {
+  // Récupérer les données depuis la base de données MongoDB
+  ArduinoData.find({})
+      .then(data => {
+          res.json(data); // Renvoyer les données au format JSON
+      })
+      .catch(err => {
+          console.error('Erreur lors de la récupération des données:', err);
+          res.status(500).send("Erreur lors de la récupération des données");
+      });
+});
 
 server.listen(port, () => {
   console.log(`Serveur en écoute sur le port ${port}`);

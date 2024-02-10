@@ -8,6 +8,10 @@ const server = http.createServer(app);
 const port = 3000;
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
+
+
+
+
 const serialPort = new SerialPort({
   path: "/dev/ttyACM0",
   baudRate: 115200,
@@ -40,6 +44,9 @@ app.get("/data", (req, res) => {
     console.log("Max Allowed Height Update = " + maxAllowedHeight);
 
     const isAuthorized = parseFloat(distance) >= parseFloat(maxAllowedHeight);
+
+
+
 
     const response = {
       type: "vehicleStatus",

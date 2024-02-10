@@ -10,10 +10,8 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 void setup()
 {
     lcd.begin(16, 2);
-
     Serial.begin(115200); // Vitesse de communication série
-
-    pinMode(8, OUTPUT); // LED ROUGE
+    pinMode(8, OUTPUT);   // LED ROUGE
     digitalWrite(8, LOW);
     pinMode(9, OUTPUT); // LED VERTE
     digitalWrite(9, LOW);
@@ -31,20 +29,18 @@ void loop()
     long measure = pulseIn(ECHO, HIGH, MEASURE_TIMEOUT);
     float distance_mm = measure / 2.0 * SOUND_SPEED;
 
-    // Filtrer les données pour envoyer uniquement dans une plage spécifique (par exemple, entre 100 et 500 mm)
-
-    // Envoyer la distance via le port série
-    Serial.println(distance_mm);
+    // Envoyer la distance et MAX_ALLOWED_HEIGHT via le port série
+    Serial.print(distance_mm);
+    Serial.print(",");
+    Serial.println(MAX_ALLOWED_HEIGHT);
 
     lcd.print(distance_mm / 10.0, 2);
     lcd.print("  CM");
-
     lcd.display();
 
     // Vérifier la hauteur du véhicule et allumer la LED appropriée
     if (distance_mm == 0)
     {
-
         digitalWrite(8, LOW); // LED rouge éteinte
         digitalWrite(9, LOW); // LED verte éteinte
     }
@@ -56,7 +52,6 @@ void loop()
     }
     else
     {
-
         // La hauteur du véhicule est autorisée
         digitalWrite(8, LOW);  // LED rouge éteinte
         digitalWrite(9, HIGH); // LED verte allumée

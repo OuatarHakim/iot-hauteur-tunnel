@@ -26,7 +26,8 @@ db.once('open', () => {
 const arduinoDataSchema = new mongoose.Schema({
   distance: Number,
   maxAllowedHeight: Number,
-  isAuthorized: Boolean
+  isAuthorized: Boolean,
+  createdAt: { type: Date, default: Date.now }
 });
 
 const ArduinoData = mongoose.model('ArduinoData', arduinoDataSchema);
@@ -35,6 +36,7 @@ const ArduinoData = mongoose.model('ArduinoData', arduinoDataSchema);
 
 // Fonction pour enregistrer les données dans la base de données MongoDB
 function saveDataToMongoDB(distance, maxAllowedHeight, isAuthorized) {
+
   const arduinoData = new ArduinoData({
     distance: parseFloat(distance),
     maxAllowedHeight: parseFloat(maxAllowedHeight),

@@ -24,8 +24,8 @@
 
         <nav class="navbar">
             <a href="#home" class="active">Home</a>
-            <a href="/statistics" >Statistic</a>
-             <a href="#Reglages">Reglages</a>
+            <a href="/statistics">Statistic</a>
+            <a href="#Reglages">Reglages</a>
 
 
         </nav>
@@ -67,13 +67,14 @@
 
 
     </section>
-   
-    
+
+
     <section class="statistics" id="statistics">
-        <h2 class="heading">Statistiques</h2>
+        <h2 class="heading">Historiques des 10 dernières  distances non autorisées : </h2>
         <div id="statistics-display"></div>
     </section>
-   
+
+
 
 </body>
 
@@ -140,22 +141,26 @@
             .catch(error => console.error('Erreur lors de l\'envoi de la distance maximale à l\'Arduino:', error));
     }
 
-function fetchStatistics() {
-    fetch('/statistics')
-        .then(response => response.json())
-        .then(data => {
-            const statisticsDisplay = document.getElementById('statistics-display');
-            statisticsDisplay.innerHTML = ''; 
-            data.forEach(statistic => {
-                const statisticElement = document.createElement('div');
-                statisticElement.innerHTML = `<p>Distance: ${statistic.distance} mm</p>`;
-                statisticsDisplay.appendChild(statisticElement);
-            });
-        })
-        .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
-}
+    function fetchStatistics() {
+        fetch('/statistics')
+            .then(response => response.json())
+            .then(data => {
+                const statisticsDisplay = document.getElementById('statistics-display');
+                statisticsDisplay.innerHTML = '';
+                data.forEach(statistic => {
+                    const statisticElement = document.createElement('div');
+                    statisticElement.classList.add('statistics-item');
+                    statisticElement.innerHTML = `
+                            <p class="distance">Distance: ${statistic.distance} mm</p>
+                            <p class="date">Date: ${new Date(statistic.createdAt).toLocaleString()}</p>
+                        `;
+                    statisticsDisplay.appendChild(statisticElement);
+                });
+            })
+            .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
+    }
 
-document.addEventListener('DOMContentLoaded', fetchStatistics);
+    document.addEventListener('DOMContentLoaded', fetchStatistics);
 
 
 </script>
@@ -195,7 +200,6 @@ document.addEventListener('DOMContentLoaded', fetchStatistics);
     }
 
     section {
-        min-height: 100vh;
         padding: 10rem 9% 2rem;
     }
 
@@ -362,35 +366,38 @@ document.addEventListener('DOMContentLoaded', fetchStatistics);
         color: var(--second-bg-color);
 
     }
+
     .statistics {
-    padding: 5rem 0; 
-    background-color: #fff; 
-}
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
 
-.statistics .heading {
-    font-size: 2.5rem; 
-    margin-bottom: 3rem; 
-    color: #333; 
-    text-align: center; 
-}
+    .statistics h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
 
-.statistics #statistics-display {
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-    gap: 2rem; 
-}
+    .statistics-item {
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
 
-.statistics #statistics-display p {
-    font-size: 1.6rem; 
-    background-color: #1f242d; 
-    padding: 1.5rem; 
-    border-radius: 0.5rem;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); 
-}
+    .statistics-item p {
+        font-size: 18px;
+        margin: 0;
+    }
 
-/* Style supplémentaire pour les statistiques lorsque la souris survole */
-.statistics #statistics-display p:hover {
-    background-color: #e0e0e0; /* Changement de couleur de fond */
-}
+    .statistics-item .distance {
+        font-weight: bold;
+        color: #007bff;
+    }
 
+    .statistics-item .date {
+        color: #6c757d;
+    }
 </style>

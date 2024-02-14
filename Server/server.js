@@ -129,9 +129,9 @@ app.post("/limit-distance", (req, res) => {
 });
 app.get("/statistics", (req, res) => {
   // Récupérer les données depuis la base de données MongoDB
-  ArduinoData.find({})
+  ArduinoData.find().sort({createdAt: -1}).limit(10)
     .then((data) => {
-      res.json(data); // Renvoyer les données au format JSON
+      res.json(data); 
     })
     .catch((err) => {
       console.error("Erreur lors de la récupération des données:", err);

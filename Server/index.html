@@ -24,7 +24,7 @@
 
         <nav class="navbar">
             <a href="#home" class="active">Home</a>
-            <a href="/statistics">Statistic</a>
+            <a href="#statistics">Statistic</a>
             <a href="#Reglages">Reglages</a>
 
 
@@ -35,7 +35,7 @@
     <!-- home section design-->
     <div class="home" id="home">
         <div class="home-content"></div>
-        <h1>Arduino Dataaa:</h1>
+        <h1>Arduino Gestion Du Tunnel</h1>
         <div id="data-display"></div>
 
 
@@ -43,19 +43,21 @@
     </section>
 
 
-    <!-- contact section design -->
+   
 
-    <section class="contact" id="contact">
+    <section class="Reglages" id="Reglages">
         <h2 class="heading">Reglage <span>Distance</span></h2>
         <form action="#">
 
 
             <div class="input-box">
-                <input type="number" id="min-distance" placeholder="Min">
+                
+                <input type="" value="Distance Actuelle" class="btn">
                 <input type="number" id="max-distance" placeholder="Max">
 
 
-                <input type="submit" value="Appliquer" class="btn">
+               
+            
                 <div class="input-box">
                     <input type="number" id="limit-distance" placeholder="Entrez la distance maximale">
                     <button class="btn" onclick="sendMaxDistance()">Envoyer</button>
@@ -90,8 +92,14 @@
         <div id="filter-display"></div>
     
     </section>
-    
-    
+
+    <section class="unauthorized-vehicles" id="unauthorized-vehicles">
+        <h2 class="heading">Nombre de véhicules non autorisés regroupés par maxAllowedHeight :</h2>
+        <div id="unauthorized-vehicles-display"></div>
+    </section>
+
+
+
 
 
 </body>
@@ -158,24 +166,27 @@ function sendMaxDistance() {
         .catch(error => console.error('Erreur lors de l\'envoi de la distance maximale à l\'Arduino:', error));
 }
 
-function fetchStatistics() {
-    fetch('/statistics')
-        .then(response => response.json())
-        .then(data => {
-            const statisticsDisplay = document.getElementById('statistics-display');
-            statisticsDisplay.innerHTML = '';
-            data.forEach(statistic => {
-                const statisticElement = document.createElement('div');
-                statisticElement.classList.add('statistics-item');
-                statisticElement.innerHTML = `
-                        <p class="distance">Distance: ${statistic.distance} mm</p>
-                        <p class="date">Date: ${new Date(statistic.createdAt).toLocaleString()}</p>
-                    `;
-                statisticsDisplay.appendChild(statisticElement);
-            });
-        })
-        .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
-}
+    function fetchStatistics() {
+        fetch('/statistics')
+            .then(response => response.json())
+            .then(data => {
+                
+                const statisticsDisplay = document.getElementById('statistics-display');
+                statisticsDisplay.innerHTML = '';
+                data.forEach(statistic => {
+                    console.log(statistic.maxAllowedHeight)
+                    const statisticElement = document.createElement('div');
+                    statisticElement.classList.add('statistics-item');
+                    statisticElement.innerHTML = `
+                            <p class="distance">Distance: ${statistic.distance} mm</p>
+                            <p class="date">Max Autoriser : ${statistic.maxAllowedHeight}
+                            <p class="date">Date: ${new Date(statistic.createdAt).toLocaleString()}</p>
+                        `;
+                    statisticsDisplay.appendChild(statisticElement);
+                });
+            })
+            .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
+    }
 
 document.addEventListener('DOMContentLoaded', fetchStatistics);
 
@@ -207,6 +218,29 @@ if (startDate && endDate) {
     alert('Veuillez sélectionner les dates de début et de fin.');
 }
 });
+
+
+
+    function fetchUnauthorizedVehicles() {
+    fetch('/unauthorized-vehicles')
+        .then(response => response.json())
+        .then(data => {
+            const unauthorizedVehiclesDisplay = document.getElementById('unauthorized-vehicles-display');
+            unauthorizedVehiclesDisplay.innerHTML = '';
+            data.forEach(vehicle => {
+                const vehicleElement = document.createElement('div');
+                vehicleElement.classList.add('unauthorized-vehicle-item');
+                vehicleElement.innerHTML = `
+                    <p class="max-allowed-height">Hauteur maximale autorisée: ${vehicle._id}</p>
+                    <p class="count">Somme des vehicule non autoriser: ${vehicle.count}</p>
+                `;
+                unauthorizedVehiclesDisplay.appendChild(vehicleElement);
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des données des véhicules non autorisés:', error));
+}
+
+document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
 
 
 </script>
@@ -254,9 +288,9 @@ if (startDate && endDate) {
         top: 0;
         left: 0;
         width: 100%;
-        padding: 1rem 9%;
+        padding: 2rem 9%;
 
-        background: var(--bg-color);
+        background: var(--second-bg-color);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -320,26 +354,26 @@ if (startDate && endDate) {
     }
 
 
-    .contact h2 {
+    .Reglages h2 {
         margin-bottom: 3rem;
 
     }
 
-    .contact form {
+    .Reglages form {
         max-width: 70rem;
         margin: 1rem auto;
         text-align: center;
         margin-bottom: 3rem;
     }
 
-    .contact form .input-box {
+    .Reglages form .input-box {
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
     }
 
-    .contact form .input-box input,
-    .contact form textarea {
+    .Reglages form .input-box input,
+    .Reglages form textarea {
         width: 100%;
         padding: 1.5rem;
         font-size: 1.6rem;
@@ -350,15 +384,15 @@ if (startDate && endDate) {
         margin: .7rem 0;
     }
 
-    .contact form .input-box input {
+    .Reglages form .input-box input {
         width: 49%;
     }
 
-    .contact form textarea {
+    .Reglages form textarea {
         resize: none;
     }
 
-    .contact form .btn {
+    .Reglages form .btn {
         margin-top: 2rem;
         cursor: pointer;
     }
@@ -432,7 +466,20 @@ if (startDate && endDate) {
         border-radius: 5px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
+.unauthorized-vehicle-item{
+    margin-bottom: 10px;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 
+}
+
+.unauthorized-vehicle-item p {
+    font-size: 18px;
+        margin: 0;
+
+}
     .statistics-item p {
         font-size: 18px;
         margin: 0;
@@ -513,4 +560,16 @@ if (startDate && endDate) {
     color: #6c757d;
 }
 
+
+    .unauthorized-vehicle-item .count{
+        font-weight: bold;
+        color: #007bff;
+
+    }
+
+    .unauthorized-vehicle-item .max-allowed-height{
+        font-weight: bold;
+        color: #007bff;
+
+    }
 </style>

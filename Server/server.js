@@ -28,7 +28,7 @@ const arduinoDataSchema = new mongoose.Schema({
   distance: Number,
   maxAllowedHeight: Number,
   isAuthorized: Boolean,
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
 const ArduinoData = mongoose.model("ArduinoData", arduinoDataSchema);
@@ -127,11 +127,39 @@ app.post("/limit-distance", (req, res) => {
     }
   });
 });
+
 app.get("/statistics", (req, res) => {
   // Récupérer les données depuis la base de données MongoDB
-  ArduinoData.find().sort({createdAt: -1}).limit(10)
+  ArduinoData.find()
+    .sort({ createdAt: -1 })
+    .limit(10)
     .then((data) => {
-      res.json(data); 
+      res.json(data);
+    })
+    .catch((err) => {
+      console.error("Erreur lors de la récupération des données:", err);
+      res.status(500).send("Erreur lors de la récupération des données");
+    });
+});
+
+app.get("/unauthorized-vehicles", (req, res) => {
+  // Récupérer le nombre de véhicules non autorisés regroupés par maxAllowedHeight
+  ArduinoData.aggregate([
+    {
+      $match: {
+        isAuthorized: false, // Filtrer les documents où isAuthorized est false
+      },
+    },
+    {
+      $group: {
+        _id: "$maxAllowedHeight", // Champ pour le regroupement
+        count: { $sum: 1 }, // Compter le nombre de documents dans chaque groupe
+      },
+    },
+  ])
+    .then((data) => {
+      console.log(data); // Afficher les données regroupées dans la console
+      res.json(data); // Renvoyer les données au format JSON
     })
     .catch((err) => {
       console.error("Erreur lors de la récupération des données:", err);

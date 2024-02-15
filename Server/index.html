@@ -35,7 +35,7 @@
     <!-- home section design-->
     <div class="home" id="home">
         <div class="home-content"></div>
-        <h1>Arduino Dataaa:</h1>
+        <h1>Arduino Gestion Du Tunnel</h1>
         <div id="data-display"></div>
 
 
@@ -43,21 +43,21 @@
     </section>
 
 
-    <!-- contact section design -->
+   
 
-    <section class="contact" id="contact">
+    <section class="Reglages" id="Reglages">
         <h2 class="heading">Reglage <span>Distance</span></h2>
         <form action="#">
 
 
             <div class="input-box">
-                <!--
-                <input type="number" id="min-distance" placeholder="Min">
+                
+                <input type="" value="Distance Actuelle" class="btn">
                 <input type="number" id="max-distance" placeholder="Max">
 
 
-                <input type="submit" value="Appliquer" class="btn">
-                -->
+               
+            
                 <div class="input-box">
                     <input type="number" id="limit-distance" placeholder="Entrez la distance maximale">
                     <button class="btn" onclick="sendMaxDistance()">Envoyer</button>
@@ -186,8 +186,8 @@
                 const vehicleElement = document.createElement('div');
                 vehicleElement.classList.add('unauthorized-vehicle-item');
                 vehicleElement.innerHTML = `
-                    <p class="max-allowed-height">Max Allowed Height: ${vehicle._id}</p>
-                    <p class="count">Count: ${vehicle.count}</p>
+                    <p class="max-allowed-height">Hauteur maximale autorisée: ${vehicle._id}</p>
+                    <p class="count">Somme des vehicule non autoriser: ${vehicle.count}</p>
                 `;
                 unauthorizedVehiclesDisplay.appendChild(vehicleElement);
             });
@@ -309,26 +309,26 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     }
 
 
-    .contact h2 {
+    .Reglages h2 {
         margin-bottom: 3rem;
 
     }
 
-    .contact form {
+    .Reglages form {
         max-width: 70rem;
         margin: 1rem auto;
         text-align: center;
         margin-bottom: 3rem;
     }
 
-    .contact form .input-box {
+    .Reglages form .input-box {
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
     }
 
-    .contact form .input-box input,
-    .contact form textarea {
+    .Reglages form .input-box input,
+    .Reglages form textarea {
         width: 100%;
         padding: 1.5rem;
         font-size: 1.6rem;
@@ -339,15 +339,15 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
         margin: .7rem 0;
     }
 
-    .contact form .input-box input {
+    .Reglages form .input-box input {
         width: 49%;
     }
 
-    .contact form textarea {
+    .Reglages form textarea {
         resize: none;
     }
 
-    .contact form .btn {
+    .Reglages form .btn {
         margin-top: 2rem;
         cursor: pointer;
     }
@@ -421,7 +421,20 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
         border-radius: 5px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
+.unauthorized-vehicle-item{
+    margin-bottom: 10px;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 
+}
+
+.unauthorized-vehicle-item p {
+    font-size: 18px;
+        margin: 0;
+
+}
     .statistics-item p {
         font-size: 18px;
         margin: 0;
@@ -434,5 +447,17 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
 
     .statistics-item .date {
         color: #6c757d;
+    }
+
+    .unauthorized-vehicle-item .count{
+        font-weight: bold;
+        color: #007bff;
+
+    }
+
+    .unauthorized-vehicle-item .max-allowed-height{
+        font-weight: bold;
+        color: #007bff;
+
     }
 </style>

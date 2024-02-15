@@ -72,8 +72,26 @@
     <section class="statistics" id="statistics">
         <h2 class="heading">Historiques des 10 dernières  distances non autorisées : </h2>
         <div id="statistics-display"></div>
-    </section>
 
+      
+    </section>
+    <section class="filter" id="filter">
+        <h2 class="heading">Liste des distances enregistrées par date :</h2>
+       
+        <form id="date-range-form">
+            <label for="start-date">Date de début :</label>
+            <input type="date" id="start-date" name="start-date">
+    
+            <label for="end-date">Date de fin :</label>
+            <input type="date" id="end-date" name="end-date">
+    
+            <button type="submit">Afficher les statistiques</button>
+        </form>
+        <div id="filter-display"></div>
+    
+    </section>
+    
+    
 
 
 </body>
@@ -90,77 +108,105 @@
     </div>
 </footer>
 <script>
+let Max;
+function fetchData() {
+    fetch('/data')
+        .then(response => response.json())
+        .then(data => {
+            Max = data.distance;
 
-    let Max;
-    function fetchData() {
-        fetch('/data')
-            .then(response => response.json())
-            .then(data => {
-                Max = data.distance;
+            let statusIcon;
 
-                let statusIcon;
+            if (data.data === 'Autorisé') {
 
-                if (data.data === 'Autorisé') {
+                statusIcon = '<i class="bx bxs-check-circle" ></i>'; // Icône de validation
 
-                    statusIcon = '<i class="bx bxs-check-circle" ></i>'; // Icône de validation
+            } else {
+                statusIcon = '<i class="bx bxs-x-circle"></i>'; // Icône d'interdiction
+            }
 
-                } else {
-                    statusIcon = '<i class="bx bxs-x-circle"></i>'; // Icône d'interdiction
-                }
+            document.getElementById('data-display').innerHTML = `
+            <div class="social-media">
+                
+                <p><a href="#"><i class='bx bx-ruler'></i></a>Distance: ${data.distance} mm</p>
+                <p>Status: ${statusIcon} ${data.data}</p>
+            </div>
+            `;
 
-                document.getElementById('data-display').innerHTML = `
-                <div class="social-media">
-                    
-                    <p><a href="#"><i class='bx bx-ruler'></i></a>Distance: ${data.distance} mm</p>
-                    <p>Status: ${statusIcon} ${data.data}</p>
-                </div>
-                `;
-
-                // Mettre la valeur de Max dans l'input
-                document.getElementById('max-distance').value = Max;
-                fetchData();
-            })
-            .catch(error => console.error('Erreur de récupération des données:', error));
-    }
-
-    fetchData();
-
-    function sendMaxDistance() {
-        const maxDistance = document.getElementById('limit-distance').value;
-        fetch('/limit-distance', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ maxDistance: maxDistance })
+            // Mettre la valeur de Max dans l'input
+            document.getElementById('max-distance').value = Max;
+            fetchData();
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Distance maximale envoyée avec succès à l\'Arduino:', data.maxDistance);
-            })
-            .catch(error => console.error('Erreur lors de l\'envoi de la distance maximale à l\'Arduino:', error));
-    }
+        .catch(error => console.error('Erreur de récupération des données:', error));
+}
 
-    function fetchStatistics() {
-        fetch('/statistics')
-            .then(response => response.json())
-            .then(data => {
-                const statisticsDisplay = document.getElementById('statistics-display');
-                statisticsDisplay.innerHTML = '';
-                data.forEach(statistic => {
-                    const statisticElement = document.createElement('div');
-                    statisticElement.classList.add('statistics-item');
-                    statisticElement.innerHTML = `
-                            <p class="distance">Distance: ${statistic.distance} mm</p>
-                            <p class="date">Date: ${new Date(statistic.createdAt).toLocaleString()}</p>
-                        `;
-                    statisticsDisplay.appendChild(statisticElement);
-                });
-            })
-            .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
-    }
+fetchData();
 
-    document.addEventListener('DOMContentLoaded', fetchStatistics);
+function sendMaxDistance() {
+    const maxDistance = document.getElementById('limit-distance').value;
+    fetch('/limit-distance', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ maxDistance: maxDistance })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Distance maximale envoyée avec succès à l\'Arduino:', data.maxDistance);
+        })
+        .catch(error => console.error('Erreur lors de l\'envoi de la distance maximale à l\'Arduino:', error));
+}
+
+function fetchStatistics() {
+    fetch('/statistics')
+        .then(response => response.json())
+        .then(data => {
+            const statisticsDisplay = document.getElementById('statistics-display');
+            statisticsDisplay.innerHTML = '';
+            data.forEach(statistic => {
+                const statisticElement = document.createElement('div');
+                statisticElement.classList.add('statistics-item');
+                statisticElement.innerHTML = `
+                        <p class="distance">Distance: ${statistic.distance} mm</p>
+                        <p class="date">Date: ${new Date(statistic.createdAt).toLocaleString()}</p>
+                    `;
+                statisticsDisplay.appendChild(statisticElement);
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
+}
+
+document.addEventListener('DOMContentLoaded', fetchStatistics);
+
+document.getElementById('date-range-form').addEventListener('submit', function(event) {
+event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+
+const startDate = document.getElementById('start-date').value;
+const endDate = document.getElementById('end-date').value;
+
+// Vérifiez si les dates sont sélectionnées
+if (startDate && endDate) {
+    fetch(`/filter?startDate=${startDate}&endDate=${endDate}`)
+        .then(response => response.json())
+        .then(data => {
+            // Mettez à jour la page HTML avec les statistiques récupérées
+            const filterDisplay = document.getElementById('filter-display');
+            filterDisplay.innerHTML = ''; // Réinitialisez le contenu
+           
+            data.forEach(filter => {
+                // Créez une balise pour afficher chaque statistique
+                const filterElement = document.createElement('div');
+                filterElement.classList.add('filter-item');
+                filterElement.innerHTML = `<p>Distance: ${filter.distance} mm</p>`;
+                filterDisplay.appendChild(filterElement);
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
+} else {
+    alert('Veuillez sélectionner les dates de début et de fin.');
+}
+});
 
 
 </script>
@@ -400,4 +446,71 @@
     .statistics-item .date {
         color: #6c757d;
     }
+
+    .filter {
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.filter h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+#date-range-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+#date-range-form label {
+    margin-bottom: 10px;
+}
+
+#date-range-form input[type="date"] {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#date-range-form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
+
+#date-range-form button:hover {
+    background-color: #0056b3;
+}
+#filter-display {
+    margin-top: 20px;
+}
+
+.filter-item {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.filter-item p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.filter-item .distance {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.filter-item .date {
+    color: #6c757d;
+}
+
 </style>

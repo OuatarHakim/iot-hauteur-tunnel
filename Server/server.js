@@ -79,6 +79,7 @@ serialPort.on("error", function (err) {
   console.error("Erreur :", err.message);
 });
 
+
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
@@ -138,7 +139,21 @@ app.get("/statistics", (req, res) => {
       res.status(500).send("Erreur lors de la récupération des données");
     });
 });
+app.get('/filter', async (req, res) => {
+  try {
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    console.log(startDate)
+    // Récupérer les statistiques entre les dates spécifiées
+    const statistics = await ArduinoData.find({ createdAt: { $gte: startDate, $lte: endDate } });
 
+    // Envoyer les statistiques récupérées en tant que réponse
+    res.json(statistics);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des statistiques:', error);
+    res.status(500).json({ message: 'Une erreur est survenue lors de la récupération des statistiques.' });
+  }
+});
 server.listen(port, () => {
   console.log(`Serveur en écoute sur le port ${port}`);
 });

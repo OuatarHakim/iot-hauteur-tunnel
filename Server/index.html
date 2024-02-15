@@ -4,20 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-
     <title>Arduino Data Display</title>
-
-
     <!-- box icons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
 <body>
-
     <!-- designe de l'entete-->
-
     <header class="header">
         <a href="#" class="logo">Arduino</a>
         <i class='bx bx-menu' id="menu-icon"></i>
@@ -26,41 +19,35 @@
             <a href="#home" class="active">Home</a>
             <a href="#statistics">Statistic</a>
             <a href="#Reglages">Reglages</a>
-
-
         </nav>
     </header>
-
-
     <!-- home section design-->
     <div class="home" id="home">
         <div class="home-content"></div>
         <h1>Arduino Gestion Du Tunnel</h1>
-
-
     </div>
-    </section>
 
 
-   
+
+
 
     <section class="Reglages" id="Reglages">
-        <h2 class="heading">Reglage  Distance  :</h2>
+        <h2 class="heading">Reglage Distance :</h2>
         <form action="#">
 
 
             <div class="input-box">
-                
+
                 <input type="" value="Distance Actuelle" class="btn" readonly>
                 <input type="number" id="max-distance" placeholder="Max" readonly>
 
 
-               </div>
-            
-                <div class="input-box">
-                    <input type="number" id="limit-distance" placeholder="Entrez la distance maximale">
-                    <button class="btn" onclick="sendMaxDistance()">Envoyer</button>
-                </div>
+            </div>
+
+            <div class="input-box">
+                <input type="number" id="limit-distance" placeholder="Entrez la distance maximale">
+                <button class="btn" onclick="sendMaxDistance()">Envoyer</button>
+            </div>
 
         </form>
 
@@ -72,25 +59,25 @@
 
 
     <section class="statistics" id="statistics">
-        <h2 class="heading">Historiques des 10 dernières  distances non autorisées : </h2>
+        <h2 class="heading">Historiques des 10 dernières distances non autorisées : </h2>
         <div id="statistics-display"></div>
 
-      
+
     </section>
     <section class="filter" id="filter">
         <h2 class="heading">Liste des distances enregistrées par date :</h2>
-       
+
         <form id="date-range-form">
             <label for="start-date">Date de début :</label>
             <input type="date" id="start-date" name="start-date">
-    
+
             <label for="end-date">Date de fin :</label>
             <input type="date" id="end-date" name="end-date">
-    
+
             <button class="btn" type="submit">Afficher les statistiques</button>
         </form>
         <div id="filter-display"></div>
-    
+
     </section>
 
     <section class="filter" id="unauthorized-vehicles">
@@ -116,24 +103,24 @@
     </div>
 </footer>
 <script>
-let Max;
-function fetchData() {
-    fetch('/data')
-        .then(response => response.json())
-        .then(data => {
-            Max = data.distance;
+    let Max;
+    function fetchData() {
+        fetch('/data')
+            .then(response => response.json())
+            .then(data => {
+                Max = data.distance;
 
-            let statusIcon;
+                let statusIcon;
 
-            if (data.data === 'Autorisé') {
+                if (data.data === 'Autorisé') {
 
-                statusIcon = '<i class="bx bxs-check-circle" ></i>'; // Icône de validation
+                    statusIcon = '<i class="bx bxs-check-circle" ></i>'; // Icône de validation
 
-            } else {
-                statusIcon = '<i class="bx bxs-x-circle"></i>'; // Icône d'interdiction
-            }
+                } else {
+                    statusIcon = '<i class="bx bxs-x-circle"></i>'; // Icône d'interdiction
+                }
 
-            document.getElementById('data-display').innerHTML = `
+                document.getElementById('data-display').innerHTML = `
             <div class="social-media">
                 
                 <p><a href="#"><i class='bx bx-ruler'></i></a>Distance: ${data.distance} mm</p>
@@ -141,40 +128,39 @@ function fetchData() {
             </div>
             `;
 
-            // Mettre la valeur de Max dans l'input
-            document.getElementById('max-distance').value = Max;
-            fetchData();
-        })
-        .catch(error => console.error('Erreur de récupération des données:', error));
-}
+                // Mettre la valeur de Max dans l'input
+                document.getElementById('max-distance').value = Max;
+                fetchData();
+            })
+            .catch(error => console.error('Erreur de récupération des données:', error));
+    }
 
-fetchData();
+    fetchData();
 
-function sendMaxDistance() {
-    const maxDistance = document.getElementById('limit-distance').value;
-    fetch('/limit-distance', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ maxDistance: maxDistance })
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Distance maximale envoyée avec succès à l\'Arduino:', data.maxDistance);
+    function sendMaxDistance() {
+        const maxDistance = document.getElementById('limit-distance').value;
+        fetch('/limit-distance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ maxDistance: maxDistance })
         })
-        .catch(error => console.error('Erreur lors de l\'envoi de la distance maximale à l\'Arduino:', error));
-}
+            .then(response => response.json())
+            .then(data => {
+                console.log('Distance maximale envoyée avec succès à l\'Arduino:', data.maxDistance);
+            })
+            .catch(error => console.error('Erreur lors de l\'envoi de la distance maximale à l\'Arduino:', error));
+    }
 
     function fetchStatistics() {
         fetch('/statistics')
             .then(response => response.json())
             .then(data => {
-                
+
                 const statisticsDisplay = document.getElementById('statistics-display');
                 statisticsDisplay.innerHTML = '';
                 data.forEach(statistic => {
-                    console.log(statistic.maxAllowedHeight)
                     const statisticElement = document.createElement('div');
                     statisticElement.classList.add('statistics-item');
                     statisticElement.innerHTML = `
@@ -188,59 +174,56 @@ function sendMaxDistance() {
             .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
     }
 
-document.addEventListener('DOMContentLoaded', fetchStatistics);
+    document.addEventListener('DOMContentLoaded', fetchStatistics);
 
-document.getElementById('date-range-form').addEventListener('submit', function(event) {
-event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+    document.getElementById('date-range-form').addEventListener('submit', function (event) {
+        event.preventDefault(); // Empêche le formulaire de se soumettre normalement
 
-const startDate = document.getElementById('start-date').value;
-const endDate = document.getElementById('end-date').value;
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
 
-// Vérifiez si les dates sont sélectionnées
-if (startDate && endDate) {
-    fetch(`/filter?startDate=${startDate}&endDate=${endDate}`)
-        .then(response => response.json())
-        .then(data => {
-            // Mettez à jour la page HTML avec les statistiques récupérées
-            const filterDisplay = document.getElementById('filter-display');
-            filterDisplay.innerHTML = ''; // Réinitialisez le contenu
-           
-            data.forEach(filter => {
-                // Créez une balise pour afficher chaque statistique
-                const filterElement = document.createElement('div');
-                filterElement.classList.add('filter-item');
-                filterElement.innerHTML = `<p>Distance: ${filter.distance} mm</p>`;
-                filterDisplay.appendChild(filterElement);
-            });
-        })
-        .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
-} else {
-    alert('Veuillez sélectionner les dates de début et de fin.');
-}
-});
+        // Vérifiez si les dates sont sélectionnées
+        if (startDate && endDate) {
+            fetch(`/filter?startDate=${startDate}&endDate=${endDate}`)
+    .then(response => response.json())
+    .then(count => {
+        // Mettez à jour la page HTML avec le nombre de statistiques récupérées
+        const filterDisplay = document.getElementById('filter-display');
+        filterDisplay.innerHTML = ''; // Réinitialisez le contenu
+
+        const countElement = document.createElement('p');
+        countElement.textContent = `Nombre de distances enregistrées entre ${startDate} et ${endDate} : ${count}`;
+        filterDisplay.appendChild(countElement);
+    })
+    .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
+
+            } else {
+            alert('Veuillez sélectionner les dates de début et de fin.');
+        }
+    });
 
 
 
     function fetchUnauthorizedVehicles() {
-    fetch('/unauthorized-vehicles')
-        .then(response => response.json())
-        .then(data => {
-            const unauthorizedVehiclesDisplay = document.getElementById('unauthorized-vehicles-display');
-            unauthorizedVehiclesDisplay.innerHTML = '';
-            data.forEach(vehicle => {
-                const vehicleElement = document.createElement('div');
-                vehicleElement.classList.add('unauthorized-vehicle-item');
-                vehicleElement.innerHTML = `
+        fetch('/unauthorized-vehicles')
+            .then(response => response.json())
+            .then(data => {
+                const unauthorizedVehiclesDisplay = document.getElementById('unauthorized-vehicles-display');
+                unauthorizedVehiclesDisplay.innerHTML = '';
+                data.forEach(vehicle => {
+                    const vehicleElement = document.createElement('div');
+                    vehicleElement.classList.add('unauthorized-vehicle-item');
+                    vehicleElement.innerHTML = `
                     <p class="max-allowed-height">Hauteur maximale autorisée: ${vehicle._id}</p>
                     <p class="count">Somme des vehicule non autoriser: ${vehicle.count}</p>
                 `;
-                unauthorizedVehiclesDisplay.appendChild(vehicleElement);
-            });
-        })
-        .catch(error => console.error('Erreur lors de la récupération des données des véhicules non autorisés:', error));
-}
+                    unauthorizedVehiclesDisplay.appendChild(vehicleElement);
+                });
+            })
+            .catch(error => console.error('Erreur lors de la récupération des données des véhicules non autorisés:', error));
+    }
 
-document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
+    document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
 
 
 </script>
@@ -355,11 +338,11 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
 
 
     .Reglages h2 {
-      
-    display: flex;
-    margin-bottom: 3rem;
-    justify-content: center;
-    font-size: xx-large;
+
+        display: flex;
+        margin-bottom: 3rem;
+        justify-content: center;
+        font-size: xx-large;
     }
 
     .Reglages form {
@@ -369,8 +352,8 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     }
 
     .Reglages form .input-box {
- 
-        
+
+
         justify-content: space-between;
         flex-wrap: wrap;
     }
@@ -388,7 +371,7 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     }
 
     .Reglages form .input-box input {
-      
+
         width: 40%;
         margin-right: 5%;
     }
@@ -400,7 +383,7 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     .Reglages form .btn {
         margin-top: 2rem;
         cursor: pointer;
-        margin-left: 10rem ;
+        margin-left: 10rem;
         width: 15rem;
     }
 
@@ -473,20 +456,22 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
         border-radius: 5px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
-.unauthorized-vehicle-item{
-    margin-bottom: 10px;
+
+    .unauthorized-vehicle-item {
+        margin-bottom: 10px;
         padding: 10px;
         background-color: #fff;
         border-radius: 5px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 
-}
+    }
 
-.unauthorized-vehicle-item p {
-    font-size: 18px;
+    .unauthorized-vehicle-item p {
+        font-size: 18px;
         margin: 0;
 
-}
+    }
+
     .statistics-item p {
         font-size: 18px;
         margin: 0;
@@ -502,72 +487,77 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     }
 
     .filter {
-    padding: 10rem 9% 2rem;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
+        padding: 10rem 9% 2rem;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
 
-.filter h2 {
-    font-size: 24px;
+    .filter h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    #date-range-form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 20px;
+    }
+
+    #date-range-form label {
+        margin-bottom: 10px;
+    }
+
+    #date-range-form input[type="date"] {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+
+    #date-range-form button:hover {
+        background-color: #0056b3;
+    }
+
+    #filter-display {
+        margin-top: 20px;
+    }
+
+    .filter-item {
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    .filter-item p {
+        font-size: 16px;
+        margin: 5px 0;
+        color: #007bff;
+    }
+
+    .filter-item .distance {
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .filter-item .date {
+        color: #6c757d;
+    }
+
+    #filter-display p {
+    font-size: 18px;
     margin-bottom: 10px;
+    color: #fff0cd; /* Couleur du texte */
 }
-
-#date-range-form {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-top: 20px;
-}
-
-#date-range-form label {
-    margin-bottom: 10px;
-}
-
-#date-range-form input[type="date"] {
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-
-#date-range-form button:hover {
-    background-color: #0056b3;
-}
-#filter-display {
-    margin-top: 20px;
-}
-
-.filter-item {
-    padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.filter-item p {
-    font-size: 16px;
-    margin: 5px 0;
-    color: #007bff;
-}
-
-.filter-item .distance {
-    font-weight: bold;
-    color: #007bff;
-}
-
-.filter-item .date {
-    color: #6c757d;
-}
-
-
-    .unauthorized-vehicle-item .count{
+    .unauthorized-vehicle-item .count {
         font-weight: bold;
         color: #007bff;
 
     }
 
-    .unauthorized-vehicle-item .max-allowed-height{
+    .unauthorized-vehicle-item .max-allowed-height {
         font-weight: bold;
         color: #007bff;
 

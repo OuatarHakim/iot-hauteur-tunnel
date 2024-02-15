@@ -159,8 +159,7 @@ app.get("/unauthorized-vehicles", (req, res) => {
     },
   ])
     .then((data) => {
-      console.log(data); // Afficher les données regroupées dans la console
-      res.json(data); // Renvoyer les données au format JSON
+      res.json(data); 
     })
     .catch((err) => {
       console.error("Erreur lors de la récupération des données:", err);
@@ -171,12 +170,12 @@ app.get('/filter', async (req, res) => {
   try {
     const startDate = req.query.startDate;
     const endDate = req.query.endDate;
-    console.log(startDate)
+    console.log("conueeee")
     // Récupérer les statistiques entre les dates spécifiées
-    const statistics = await ArduinoData.find({ createdAt: { $gte: startDate, $lte: endDate } });
-
+    const count = await ArduinoData.countDocuments({ createdAt: { $gte: startDate, $lte: endDate } });
+    console.log("conu" ,count)
     // Envoyer les statistiques récupérées en tant que réponse
-    res.json(statistics);
+    res.json(count);
   } catch (error) {
     console.error('Erreur lors de la récupération des statistiques:', error);
     res.status(500).json({ message: 'Une erreur est survenue lors de la récupération des statistiques.' });

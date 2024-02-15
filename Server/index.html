@@ -36,7 +36,6 @@
     <div class="home" id="home">
         <div class="home-content"></div>
         <h1>Arduino Gestion Du Tunnel</h1>
-        <div id="data-display"></div>
 
 
     </div>
@@ -46,17 +45,17 @@
    
 
     <section class="Reglages" id="Reglages">
-        <h2 class="heading">Reglage <span>Distance</span></h2>
+        <h2 class="heading">Reglage  Distance  :</h2>
         <form action="#">
 
 
             <div class="input-box">
                 
-                <input type="" value="Distance Actuelle" class="btn">
-                <input type="number" id="max-distance" placeholder="Max">
+                <input type="" value="Distance Actuelle" class="btn" readonly>
+                <input type="number" id="max-distance" placeholder="Max" readonly>
 
 
-               
+               </div>
             
                 <div class="input-box">
                     <input type="number" id="limit-distance" placeholder="Entrez la distance maximale">
@@ -65,6 +64,7 @@
 
         </form>
 
+        <div id="data-display"></div>
 
 
 
@@ -87,13 +87,13 @@
             <label for="end-date">Date de fin :</label>
             <input type="date" id="end-date" name="end-date">
     
-            <button type="submit">Afficher les statistiques</button>
+            <button class="btn" type="submit">Afficher les statistiques</button>
         </form>
         <div id="filter-display"></div>
     
     </section>
 
-    <section class="unauthorized-vehicles" id="unauthorized-vehicles">
+    <section class="filter" id="unauthorized-vehicles">
         <h2 class="heading">Nombre de véhicules non autorisés regroupés par maxAllowedHeight :</h2>
         <div id="unauthorized-vehicles-display"></div>
     </section>
@@ -355,19 +355,22 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
 
 
     .Reglages h2 {
-        margin-bottom: 3rem;
-
+      
+    display: flex;
+    margin-bottom: 3rem;
+    justify-content: center;
+    font-size: xx-large;
     }
 
     .Reglages form {
-        max-width: 70rem;
         margin: 1rem auto;
         text-align: center;
         margin-bottom: 3rem;
     }
 
     .Reglages form .input-box {
-        display: flex;
+ 
+        
         justify-content: space-between;
         flex-wrap: wrap;
     }
@@ -385,7 +388,9 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     }
 
     .Reglages form .input-box input {
-        width: 49%;
+      
+        width: 40%;
+        margin-right: 5%;
     }
 
     .Reglages form textarea {
@@ -395,6 +400,8 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     .Reglages form .btn {
         margin-top: 2rem;
         cursor: pointer;
+        margin-left: 10rem ;
+        width: 15rem;
     }
 
     .btn {
@@ -448,7 +455,7 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     }
 
     .statistics {
-        padding: 20px;
+        padding: 10rem 9% 2rem;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         margin-bottom: 20px;
@@ -495,7 +502,7 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     }
 
     .filter {
-    padding: 20px;
+    padding: 10rem 9% 2rem;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
@@ -523,14 +530,6 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
     margin-bottom: 10px;
 }
 
-#date-range-form button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-}
 
 #date-range-form button:hover {
     background-color: #0056b3;
@@ -549,6 +548,7 @@ document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
 .filter-item p {
     font-size: 16px;
     margin: 5px 0;
+    color: #007bff;
 }
 
 .filter-item .distance {

@@ -24,7 +24,7 @@
 
         <nav class="navbar">
             <a href="#home" class="active">Home</a>
-            <a href="/statistics">Statistic</a>
+            <a href="#statistics">Statistic</a>
             <a href="#Reglages">Reglages</a>
 
 
@@ -51,11 +51,13 @@
 
 
             <div class="input-box">
+                <!--
                 <input type="number" id="min-distance" placeholder="Min">
                 <input type="number" id="max-distance" placeholder="Max">
 
 
                 <input type="submit" value="Appliquer" class="btn">
+                -->
                 <div class="input-box">
                     <input type="number" id="limit-distance" placeholder="Entrez la distance maximale">
                     <button class="btn" onclick="sendMaxDistance()">Envoyer</button>
@@ -73,6 +75,13 @@
         <h2 class="heading">Historiques des 10 dernières  distances non autorisées : </h2>
         <div id="statistics-display"></div>
     </section>
+
+    <section class="unauthorized-vehicles" id="unauthorized-vehicles">
+        <h2 class="heading">Nombre de véhicules non autorisés regroupés par maxAllowedHeight :</h2>
+        <div id="unauthorized-vehicles-display"></div>
+    </section>
+
+
 
 
 
@@ -145,13 +154,16 @@
         fetch('/statistics')
             .then(response => response.json())
             .then(data => {
+                
                 const statisticsDisplay = document.getElementById('statistics-display');
                 statisticsDisplay.innerHTML = '';
                 data.forEach(statistic => {
+                    console.log(statistic.maxAllowedHeight)
                     const statisticElement = document.createElement('div');
                     statisticElement.classList.add('statistics-item');
                     statisticElement.innerHTML = `
                             <p class="distance">Distance: ${statistic.distance} mm</p>
+                            <p class="date">Max Autoriser : ${statistic.maxAllowedHeight}
                             <p class="date">Date: ${new Date(statistic.createdAt).toLocaleString()}</p>
                         `;
                     statisticsDisplay.appendChild(statisticElement);
@@ -161,6 +173,29 @@
     }
 
     document.addEventListener('DOMContentLoaded', fetchStatistics);
+
+
+
+    function fetchUnauthorizedVehicles() {
+    fetch('/unauthorized-vehicles')
+        .then(response => response.json())
+        .then(data => {
+            const unauthorizedVehiclesDisplay = document.getElementById('unauthorized-vehicles-display');
+            unauthorizedVehiclesDisplay.innerHTML = '';
+            data.forEach(vehicle => {
+                const vehicleElement = document.createElement('div');
+                vehicleElement.classList.add('unauthorized-vehicle-item');
+                vehicleElement.innerHTML = `
+                    <p class="max-allowed-height">Max Allowed Height: ${vehicle._id}</p>
+                    <p class="count">Count: ${vehicle.count}</p>
+                `;
+                unauthorizedVehiclesDisplay.appendChild(vehicleElement);
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des données des véhicules non autorisés:', error));
+}
+
+document.addEventListener('DOMContentLoaded', fetchUnauthorizedVehicles);
 
 
 </script>
@@ -208,9 +243,9 @@
         top: 0;
         left: 0;
         width: 100%;
-        padding: 1rem 9%;
+        padding: 2rem 9%;
 
-        background: var(--bg-color);
+        background: var(--second-bg-color);
         display: flex;
         justify-content: space-between;
         align-items: center;

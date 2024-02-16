@@ -17,8 +17,9 @@
 
         <nav class="navbar">
             <a href="#home" class="active">Home</a>
-            <a href="#statistics">Statistic</a>
+            
             <a href="#Reglages">Reglages</a>
+            <a href="#statistics">Statistiques</a>
         </nav>
     </header>
     <!-- home section design-->
@@ -65,7 +66,7 @@
 
     </section>
     <section class="filter" id="filter">
-        <h2 class="heading">Liste des distances enregistrées par date :</h2>
+        <h2 class="heading">Liste des véhicule non autorisé enregistrées par date :</h2>
 
         <form id="date-range-form">
             <label for="start-date">Date de début :</label>
@@ -192,7 +193,8 @@
         filterDisplay.innerHTML = ''; // Réinitialisez le contenu
 
         const countElement = document.createElement('p');
-        countElement.textContent = `Nombre de distances enregistrées entre ${startDate} et ${endDate} : ${count}`;
+        countElement.innerHTML = `Nombre de véhicules non autorisés enregistrés entre <span style="color: blue;">${startDate}</span> et <span style="color: blue;">${endDate}</span> : <span style="color: red; font-weight: bold;">${count}</span>`;
+
         filterDisplay.appendChild(countElement);
     })
     .catch(error => console.error('Erreur lors de la récupération des statistiques:', error));
